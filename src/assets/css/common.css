@@ -1,0 +1,418 @@
+/*loading样式*/
+.loading{
+  width: 150px;
+  height: 15px;
+  margin: 0 auto;
+  margin-top:100px;
+}
+.loading span{
+  display: inline-block;
+  width: 15px;
+  height: 100%;
+  margin-right: 5px;
+  border-radius: 50%;
+  background: #FFFFFF;
+  -webkit-animation: load 1.04s ease infinite;
+}
+.loading span:last-child{
+  margin-right: 0px;
+}
+@-webkit-keyframes load{
+  0%{
+    opacity: 1;
+  }
+  100%{
+    opacity: 0;
+  }
+}
+.loading span:nth-child(1){
+  -webkit-animation-delay:0.13s;
+}
+.loading span:nth-child(2){
+  -webkit-animation-delay:0.26s;
+}
+.loading span:nth-child(3){
+  -webkit-animation-delay:0.39s;
+}
+.loading span:nth-child(4){
+  -webkit-animation-delay:0.52s;
+}
+.loading span:nth-child(5){
+  -webkit-animation-delay:0.65s;
+}
+/*主背景*/
+.video-cut{
+  min-width: 1024px;
+  background: linear-gradient(180deg,#003d75,#232b56);
+  height: 100%;
+  min-height: 700px;
+  width: auto;
+  min-width: 1200px;
+  /*选择视频部分*/
+  .select-video-box{
+    margin-top: 15%;
+    text-align: center;
+    .title{
+      color: #FFFFFF;
+      font-weight: 700;
+      font-size: 48px;
+      margin: 0;
+    }
+    .tips{
+      font-weight: 400;
+      font-size: 18px;
+      color: #FFFFFF;
+      opacity: 0.8;
+    }
+    .select-type{
+      line-height: 60px;
+      width: 250px;
+      margin: 30px auto;
+      .select-drop{
+        background: #FFFFFF;
+        margin-top: 5px;
+        .select-item{
+          cursor: pointer;
+          &:hover{
+            background: #0088ff20;
+          }
+        }
+      }
+      .select-type-inner{
+        background: #FFFFFF;
+        .open-file{
+          width: 198px;
+          color: #003d75;
+          border-right: 1px solid #003d75;
+          cursor: pointer;
+          &:hover{
+            box-shadow: 0px 0px 10px #FFFFFF;
+          }
+        }
+        .arrow{
+          width: 50px;
+          text-align: center;
+          cursor: pointer;
+          &:hover{
+            box-shadow: 0px 0px 10px #FFFFFF;
+          }
+          i{
+            color: #003d75;
+            &:hover{
+              color: #003d7575;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+/*主要内容部分*/
+.content{
+  /*头部菜单部分*/
+  .block-top{
+    margin-bottom: 15px;
+    display: flex;
+    justify-content: space-between;
+    .toolbar{
+      display: flex;
+      .tool-item{
+        opacity: 0.8;
+        vertical-align: middle;
+        background-color: rgba(0,0,0,.1);
+        color: #FFFFFF;
+        font-size: 13px;
+        cursor: pointer;
+        line-height: 20px;
+        margin-right: 5px;
+        padding: 6px 15px;
+        &:hover{
+          opacity: 1;
+        }
+        &.active {
+          opacity: 1;
+          background: #012d56;
+        }
+        &:first-child{
+          border-radius: 10px 0px 0px 10px;
+        }
+        &:last-child{
+          border-radius: 0px 10px 10px 0px;
+        }
+        .i-name {
+          margin-left: 5px;
+          display: inline-block;
+          cursor: pointer;
+        }
+        i {
+          height: 20px;
+        }
+      }
+    }
+    .toolbar-right{
+      display: flex;
+      color: #FFFFFF;
+      font-size: 13px;
+      line-height: 20px;
+      .reset{
+        padding-right: 18px;
+      }
+      .tool-item{
+        opacity: 0.8;
+        cursor: pointer;
+        &:hover{
+          opacity: 1;
+        }
+      }
+    }
+  }
+ 
+  .video-content{
+  }
+}
+/*视频部分*/
+.video_box{
+  .video-name{
+    font-size: 12px;
+    text-align: center;
+    color: hsla(0,0%,100%,.5);
+    margin-bottom: 15px;
+  }
+  .video-js{
+    margin: 0 auto;
+  }
+}
+/*视频播放区域可操作的部分*/
+.dragable-area {
+  height: 360px;
+  width: 800px;
+  position: absolute;
+  top: 0px;
+  left: calc((100% - 800px)/2);
+  .clear-water {
+    position: absolute;
+    right: 0;
+    top: 0;
+    transform: translate(50%,-50%);
+    color: green;cursor: pointer;
+    &:hover {
+      color: darkblue;
+    }
+  }
+}
+/*展示时间部分*/
+.show-time-box {
+  .show-time{
+    color: #00e0ff;
+  }
+}
+/*视轨部分*/
+.track-wrap{
+  box-sizing: border-box;
+  width: 1020px;
+  overflow: visible;
+  margin: 43px auto;
+  .drag-frames {
+    width:1000px;
+    transform: translateX(10px);
+    position: absolute;
+    top: 0;
+    left: 0;
+    ul,li{
+      list-style: none;
+      display: block;
+      margin:0;
+      padding:0;
+    }
+    .box{
+      width:1000px;
+      height:50px;
+      position: relative;
+      /*overflow:hidden;*/
+      overflow: inherit;
+    }
+    .left{
+      width:0px;
+      height:100%;
+      background-color: rgba(32,57,109,.5);
+      float:left;
+    }
+ 
+    .resize{
+      transform:translateX(-10px);
+      width:10px;
+      height:100%;
+      cursor: w-resize;
+      float:left;
+      background-color: #00e0ff;
+      border-top-left-radius: 4px;
+      border-bottom-left-radius: 4px;
+      border-bottom-right-radius: 0;
+      border-top-right-radius: 0;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-size: 5px auto;
+      background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg viewBox='0 0 3 15' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1.5 3a1.5 1.5 0 100-3 1.5 1.5 0 000 3zM1.5 9a1.5 1.5 0 100-3 1.5 1.5 0 000 3zM1.5 15a1.5 1.5 0 100-3 1.5 1.5 0 000 3z' fill='%23fff' clip-rule='evenodd' fill-rule='evenodd'/%3E%3C/svg%3E");
+      &::before{
+        content: attr(data-before);
+        color: #00e0ff;
+        position: absolute;
+        bottom: 0;
+        transform: translate(-50%, 30px);
+        width: max-content;
+      }
+    }
+    .resize:before {
+    }
+    .resize2{
+      transform:translateX(10px);
+      position:absolute;
+      width:10px;
+      height:100%;
+      cursor: w-resize;
+      float:right;
+      right:0;
+      background-color: #00e0ff;
+      border-top-left-radius: 0px;
+      border-bottom-left-radius: 0px;
+      border-bottom-right-radius: 4px;
+      border-top-right-radius: 4px;
+      background-repeat: no-repeat;
+      background-position: center;
+      background-size: 5px auto;
+      background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg viewBox='0 0 3 15' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1.5 3a1.5 1.5 0 100-3 1.5 1.5 0 000 3zM1.5 9a1.5 1.5 0 100-3 1.5 1.5 0 000 3zM1.5 15a1.5 1.5 0 100-3 1.5 1.5 0 000 3z' fill='%23fff' clip-rule='evenodd' fill-rule='evenodd'/%3E%3C/svg%3E");
+      &::after{
+        content: attr(data-after);
+        color: #00e0ff;
+        position: absolute;
+        bottom: 0;
+        transform: translate(-50%, 30px);
+        width: max-content;
+      }
+    }
+ 
+    .right{
+      float:left;
+      width:0px;
+      height:100%;
+      background-color: rgba(32,57,109,.5);
+    }
+    .mid{
+      min-width: 5px;
+      position:relative;
+      float:left;
+      width:100%;
+      height:100%;
+      background: transparent;
+    }
+  }
+  .components_video-navigation{
+    position: relative;
+  }
+  .component_storyboard {
+    padding: 0 10px;
+    .frames {
+      display: flex;
+      width: 100%;
+      overflow: hidden
+    }
+    .frame {
+      img {
+        width: 88px;
+        height: 50px;
+      }
+    }
+    .frame.loaded{
+      background-image: none
+    }
+  }
+  .component_storyboard .frames .frame{
+    background-color: rgba(0,0,0,.8);
+    background-image: url('data:image/svg+xml;utf8,<svg width="200px" height="200px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid" class="lds-eclipse" style="animation-play-state: running; animation-delay: 0s; background: none;"><path stroke="none" d="M10 50A40 40 0 0 0 90 50A40 42 0 0 1 10 50" fill="%2300E0FF" style="animation-play-state: running; animation-delay: 0s;"><animateTransform attributeName="transform" type="rotate" calcMode="linear" values="0 50 51;360 50 51" keyTimes="0;1" dur="1s" begin="0s" repeatCount="indefinite" style="animation-play-state: running; animation-delay: 0s;"></animateTransform></path></svg>');
+    background-size: 25%;
+    background-position: 50%;
+    background-repeat: no-repeat;
+    flex-shrink: 0;
+    flex-grow: 0;
+    pointer-events: none
+  }
+}
+/* 底部的操作菜单 */
+.bottom-nav {
+  color: #FFFFFF;
+  display: flex;
+  justify-content: space-between;
+  .bottom-nav-item{
+    &:hover{
+      background-color: rgba(0,0,0,.5);
+    }
+    padding: 0 15px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 50px;
+    height: 50px;
+    border-radius: 15px;
+    box-sizing: border-box;
+    border: 1px solid transparent;
+    position: relative;
+    margin-right: 20px;
+    margin-top: 10px;
+    display: inline-block;
+    background-color: rgba(0,0,0,.25);
+  }
+  .play-btn {
+    width: 100px;
+    i{
+      font-size: 16px;
+    }
+  }
+  .range-slide {
+    width: 160px;
+    padding: 8px;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%,-50%);
+  }
+}
+/* 游标的样式 */
+.youbiao{
+  position: absolute;
+  left: 0px;
+}
+.youbiao-time{
+  width: 70px;
+  position: absolute;
+  left: 0px;
+  color:#333333;
+  transform: translate(-50%,-25px);
+  font-size: 12px;
+  background: #FFFFFF;
+  border-radius: 10px;
+  padding:3px;
+  text-align: center;
+}
+/* 设置 */
+.setting-box {
+  position: absolute;
+  width:fit-content;
+  border-radius: 20px;
+  background-color: #000;
+  border: none;
+  padding: 20px;
+  font-size: 14px;
+  transform: translate(-50%, -110%);
+  div{
+    width: auto;
+  }
+}
+/* 整页加载中的loading */
+.full-loading{
+  position: absolute;
+  top: 0;
+  left: 0px;
+  width: 100%;
+  height: 100%;
+  background: #33333380;
+  text-align: center;
+}
