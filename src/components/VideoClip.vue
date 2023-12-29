@@ -1,100 +1,130 @@
 <template>
-  <div class="video-cut" crossorigin="“anonymous”">
-    <!--    <span v-tip="123">2222</span>
-        <i class="iconfont icon-lkingboxiaojianzi"></i>-->
-    <template v-if="!options.sources[0].src">
-      <input
-        v-show="false"
-        id="pop_video"
-        type="file"
-        accept="video/mp4"
-        @change="getVideo"
-        name="fileTrans"
-        ref="file"
-        value=""
-      />
-    </template>
-    <input
-      v-show="false"
-      id="pop_pic"
-      type="file"
-      accept="image/*"
-      @change="getPic"
-      name="filePic"
-      ref="filePic"
-      value=""
-    />
-    <input
-      v-show="false"
-      id="pop_audio"
-      type="file"
-      accept="audio/mpeg"
-      @change="getAudio"
-      name="fileAudio"
-      ref="fileAudio"
-      value=""
-    />
-    <div class="content-container">
-      <div class="content-box">
-        <!--头部菜单-->
-        <div v-if="options.sources[0].src" class="content-top-menu">
+  <div class="video_clip_container" crossorigin="“anonymous”">
+    <div class="video_clip_menu">
+      <div class="video_clip_menu_left">
+        <!-- 选择视频 !options.sources[0].src-->
+        <div class="video_clip_upload_box">
+          <div class="video_clip_upload" v-if="!options.sources[0].src">
+            <!-- <div class="title">简易剪辑视频</div>
+            <div class="tips" @click="initFfmpeg">Trim or cut video</div> -->
+            <div class="select-type" v-if="initFfmpegBool">
+              <div class="select-type-inner">
+                <div
+                  style="display: inline-block"
+                  class="open-file"
+                  @click="selectFile"
+                >
+                  打开文件
+                </div>
+                <div
+                  style="display: inline-block"
+                  class="arrow"
+                  @click="
+                    showSelectDrop
+                      ? (showSelectDrop = false)
+                      : (showSelectDrop = true)
+                  "
+                >
+                  <!-- <i class="iconfont icon-xia"></i> -->
+                  ▼
+                </div>
+              </div>
+              <div
+                class="select-drop"
+                v-if="showSelectDrop"
+                @mouseleave="showSelectDrop = false"
+              >
+                <div class="select-item">本地视频</div>
+                <div class="select-item">平台视频</div>
+                <div class="select-item" @click="inputFileUrl">通过视频URL</div>
+              </div>
+            </div>
+            <div v-else style="color: white">
+              <div class="loading">
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+              </div>
+              <div style="margin-top: 20px">环境准备中...</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- 视频编辑区域 -->
+      <div class="video_clip_content_box">
+        <div class="video_clip_content_top">
           <div class="toolbar">
             <div
               class="tool-item"
               @click="changeCurrentType('cut')"
               :class="{ active: currentType == 'cut' }"
-              v-tip.top.dark.hover="'裁剪视频'"
+              
             >
+            <!-- v-tip.top.dark.hover="'裁剪视频'" -->
               <i class="iconfont icon-cut"></i><span class="i-name">裁剪</span>
             </div>
             <div
               class="tool-item"
               @click="changeCurrentType('snapshot')"
               :class="{ active: currentType == 'snapshot' }"
-              v-tip.top.dark.hover="'屏幕快照'"
+              
             >
-              <i class="iconfont icon-post_pic"></i>
+            <!-- v-tip.top.dark.hover="'屏幕快照'" -->
+              <i class="iconfont icon-post_pic"></i
+              ><span class="i-name">屏幕快照</span>
             </div>
             <div
               class="tool-item"
               @click="changeCurrentType('addimg')"
               :class="{ active: currentType == 'addimg' }"
-              v-tip.top.dark.hover="'上传水印图片'"
+              
             >
-              <i class="iconfont icon-ai-up-img"></i>
+            <!-- v-tip.top.dark.hover="'上传水印图片'" -->
+              <i class="iconfont icon-ai-up-img"></i
+              ><span class="i-name">上传水印图片</span>
             </div>
             <div
               class="tool-item"
               @click="changeCurrentType('audio')"
               :class="{ active: currentType == 'audio' }"
-              v-tip.top.dark.hover="'音频'"
+              
             >
-              <i class="iconfont icon-yinpinbofang"></i>
+            <!-- v-tip.top.dark.hover="'音频'" -->
+              <i class="iconfont icon-yinpinbofang"></i
+              ><span class="i-name">音频</span>
             </div>
           </div>
           <div class="toolbar-right">
             <div
               class="reset tool-item"
-              v-tip.top.dark.hover="'回到初始状态'"
+              
               @click="reset"
             >
-              <i class="iconfont icon-chexiao" style="margin-right: 5px"></i>重置
+            <!-- v-tip.top.dark.hover="'回到初始状态'" -->
+              <i class="iconfont icon-chexiao" style="margin-right: 5px"></i
+              >重置
             </div>
             <div
               class="tool-item"
-              v-tip.top.dark.hover="'关闭项目'"
+              
               @click="closeProject"
             >
+            <!-- v-tip.top.dark.hover="'关闭项目'" -->
               <i class="iconfont icon-guanbi111"></i>
             </div>
           </div>
         </div>
-        <!--视频部分-->
-        <div v-if="options.sources[0].src" class="video-content">
+        <div class="video_clip_content">
           <div class="video_box">
-            <div class="video-name">{{ videoInfo.baseInfo.name }}</div>
+            <div class="video_box_title">
+              <span>播放器</span>
+              <div class="video-name">{{ videoInfo.baseInfo.name }}</div>
+            </div>
             <div style="position: relative">
-              <!-- <video ref="videoPlayer" class="video-js"></video> -->
+              <video ref="videoPlayer" class="video-js"></video>
+
               <!--因为视频大小是动态的，所以dragable-area的大小也是不断变化的-->
               <div
                 class="dragable-area"
@@ -103,7 +133,7 @@
                   left: 'calc((100% - ' + videoInfo.baseInfo.width + 'px)/2)',
                 }"
               >
-                <!--判断是不是需要展示可编辑水印部分内容-->
+                <!-- 判断是不是需要展示可编辑水印部分内容 -->
                 <template>
                   <vue-draggable-resizable
                     v-if="waterPicInfo.source"
@@ -138,237 +168,255 @@
                       :src="waterPicInfo.source"
                       style="width: 100%; height: 100%"
                       :style="{
-                        opacity: waterPicInfo.opacity ? waterPicInfo.opacity / 100 : 1,
+                        opacity: waterPicInfo.opacity
+                          ? waterPicInfo.opacity / 100
+                          : 1,
                       }"
                     />
                   </vue-draggable-resizable>
                 </template>
-                <div>
-                  <video ref="videoPlayer" class="video-js"></video>
-                </div>
               </div>
             </div>
-          </div>
-        </div>
-        <!--底部变化的菜单-->
-        <div class="content-button-menu" v-show="options.sources[0].src">
-          <!--轨道区域-->
-          <div class="track-wrap">
-            <div class="components_video-navigation navigation">
-              <div class="component_storyboard storyboard">
-                <!--视频的帧数组-->
-                <div class="frames">
-                  <div
-                    class="frame loaded"
-                    style="width: 80px; height: 50px"
-                    v-for="(item, index) in 13"
-                    :key="index"
-                  >
-                    <img
-                      :src="videoInfo.waterFrames[index]"
-                      v-if="videoInfo.waterFrames[index]"
-                      class="loaded"
-                    />
-                  </div>
-                </div>
-              </div>
-              <div class="drag-frames">
-                <ul class="box" ref="box">
-                  <li class="left" ref="left"></li>
-                  <li class="mid" ref="mid">
-                    <div class="resize" ref="resize"></div>
-                    <div
-                      class="youbiao"
-                      ref="youbiao"
-                      :style="{ left: youbiaoLeft }"
-                      style="height: 50px; border-left: 1px solid #ffffff"
-                    ></div>
-                    <div
-                      class="youbiao-time"
-                      ref="youbiaotime"
-                      :style="{ left: youbiaoLeft }"
-                      v-if="player"
-                    >
-                      {{ transTimeCom }}
-                    </div>
-                    <div class="resize2" ref="resize2"></div>
-                  </li>
-                  <li class="right" ref="right"></li>
-                </ul>
-              </div>
-            </div>
-          </div>
-          <!--底部操作菜单-->
-          <div class="bottom-nav">
-            <div style="display: flex">
+            <div class="video_box_bottom">
               <!--控制视频播放的菜单-->
               <div
                 class="play-btn bottom-nav-item"
                 @click="!playStatus ? player.play() : player.pause()"
               >
-                <i class="iconfont icon-bofang" v-if="!playStatus"></i>
-                <i class="iconfont icon-weibiaoti519" v-else></i>
+                <i class="iconfont icon-bofang" v-if="!playStatus">▶️</i>
+                <i class="iconfont icon-weibiaoti519" v-else>⏹</i>
               </div>
-              <!--cut视频的部分-->
-              <template v-if="currentType === 'cut'">
-                <div class="bottom-nav-item" style="padding: 0 20px; display: flex">
-                  <step
-                    @addSecond="addSecond"
-                    :type="'start'"
-                    @delSecond="delSecond"
-                    :initval="videoInfo.controlInfo.start"
-                    style="margin-right: 10px"
-                    :min="0"
-                    :max="videoInfo.controlInfo.end"
-                  ></step>
-                  <step
-                    @addSecond="addSecond"
-                    :type="'end'"
-                    @delSecond="delSecond"
-                    :initval="videoInfo.controlInfo.end"
-                    :min="videoInfo.controlInfo.start"
-                    :max="videoInfo.baseInfo.duration"
-                  ></step>
-                </div>
-              </template>
-              <!--屏幕快照部分-->
-              <template v-if="currentType === 'snapshot'">
-                <div class="bottom-nav-item" @click="makePhoto">
-                  <i class="iconfont icon-post_pic" style="margin-right: 10px"></i>
-                  下载快照
-                </div>
-              </template>
-              <!--添加水印图片部分-->
-              <template v-if="currentType === 'addimg'">
-                <div class="bottom-nav-item" @click="selectPic">
-                  <i class="iconfont icon-ai-up-img" style="margin-right: 10px"></i>
-                  添加图片
-                </div>
-                <div class="bottom-nav-item">
-                  <label style="display: inline-block">透明度</label>
-                  <div
-                    style="
-                      position: relative;
-                      display: inline-block;
-                      min-width: 160px;
-                      transform: translateY(-5px);
-                    "
-                  >
-                    <vue-range-slider
-                      width="160"
-                      class="range-slide"
-                      ref="slider"
-                      v-model="waterPicInfo.opacity"
-                    ></vue-range-slider>
-                  </div>
-                </div>
-              </template>
-              <!--视频声音相关-->
-              <template v-if="currentType === 'audio'">
-                <div
-                  class="bottom-nav-item"
-                  @click="downloadAudio"
-                  v-tip.top.dark.hover="'下载视频的音频'"
-                >
-                  <i class="iconfont icon-xiazai" style="margin-right: 10px"></i> 下载音频
-                </div>
-                <div
-                  class="bottom-nav-item"
-                  @click="selectAudio"
-                  v-tip.top.dark.hover="'添加背景音'"
-                >
-                  <i class="iconfont icon-yinpinbofang" style="margin-right: 10px"></i>
-                  {{ videoInfo.audio.name ? "替换" : "添加" }}背景音
-                  <span style="font-size: 12px" v-if="videoInfo.audio.name"
-                    >(已添加：{{ videoInfo.audio.name }})</span
-                  >
-                </div>
-              </template>
-            </div>
-            <!--靠右的设置、保存输出-->
-            <template v-if="videoInfo.baseInfo.originHeight">
-              <div style="float: right">
-                <!--输出选项进行设置-->
-                <div
-                  class="setting-box"
-                  v-if="showSetting"
-                  @mouseleave="showSetting = false"
-                >
-                  <div v-for="key in Object.keys(resolvingPower)" :key="key">
-                    <template v-if="!key || key <= videoInfo.baseInfo.originHeight">
-                      <label>
-                        <input
-                          type="radio"
-                          name="rdSpeed"
-                          :value="key"
-                          v-model="videoInfo.controlInfo.resolvingPower"
-                        />
-                        {{ resolvingPower[key] }}
-                      </label>
-                    </template>
-                  </div>
-                </div>
-                <div
-                  class="bottom-nav-item"
-                  v-tip.top.dark.hover="'输出设置'"
-                  @click="showSetting = !showSetting"
-                >
-                  <i class="iconfont icon-shezhi"></i>
-                </div>
-                <div
-                  class="bottom-nav-item"
-                  v-tip.top.dark.hover="'保存'"
-                  @click="saveFinally"
-                >
-                  保存
-                </div>
-              </div>
-            </template>
-          </div>
-        </div>
-      </div>
-      <!--选择视频-->
-      <div class="select-video-box" v-if="!options.sources[0].src">
-        <div class="title">简易剪辑视频</div>
-        <div class="tips" @click="initFfmpeg">Trim or cut video</div>
-        <div class="select-type" v-if="initFfmpegBool">
-          <div class="select-type-inner">
-            <div style="display: inline-block" class="open-file" @click="selectFile">
-              打开文件
-            </div>
-            <div
-              style="display: inline-block"
-              class="arrow"
-              @click="showSelectDrop ? (showSelectDrop = false) : (showSelectDrop = true)"
-            >
-              <!-- <i class="iconfont icon-xia"></i> -->
-              ▼
             </div>
           </div>
-          <div
-            class="select-drop"
-            v-if="showSelectDrop"
-            @mouseleave="showSelectDrop = false"
-          >
-            <div class="select-item">本地视频</div>
-            <div class="select-item">平台视频</div>
-            <div class="select-item" @click="inputFileUrl">通过视频URL</div>
-          </div>
-        </div>
-        <div v-else style="color: white">
-          <div class="loading">
-            <span></span>
-            <span></span>
-            <span></span>
-            <span></span>
-            <span></span>
-          </div>
-          <div style="margin-top: 20px">环境准备中...</div>
         </div>
       </div>
     </div>
+    <div class="video_clip_options">
+      <div class="video_clip_options_box">
+        <!--轨道区域-->
+        <div class="track-wrap">
+          <div class="components_video-navigation navigation">
+            <div class="component_storyboard storyboard">
+              <!--视频的帧数组-->
+              <div class="frames">
+                <div
+                  class="frame loaded"
+                  style="width: 80px; height: 50px"
+                  v-for="(item, index) in 13"
+                  :key="index"
+                >
+                  <img
+                    :src="videoInfo.waterFrames[index]"
+                    v-if="videoInfo.waterFrames[index]"
+                    class="loaded"
+                  />
+                </div>
+              </div>
+            </div>
+            <div class="drag-frames">
+              <ul class="box" ref="box">
+                <li class="left" ref="left"></li>
+                <li class="mid" ref="mid">
+                  <div class="resize" ref="resize"></div>
+                  <div
+                    class="youbiao"
+                    ref="youbiao"
+                    :style="{ left: youbiaoLeft }"
+                    style="height: 50px; border-left: 1px solid #ffffff"
+                  ></div>
+                  <div
+                    class="youbiao-time"
+                    ref="youbiaotime"
+                    :style="{ left: youbiaoLeft }"
+                    v-if="player"
+                  >
+                    {{ transTimeCom }}
+                  </div>
+                  <div class="resize2" ref="resize2"></div>
+                </li>
+                <li class="right" ref="right"></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <!--底部操作菜单-->
+        <div class="bottom-nav">
+          <div style="display: flex">
+            <!--cut视频的部分-->
+            <template v-if="currentType === 'cut'">
+              <div
+                class="bottom-nav-item"
+                style="padding: 0 20px; display: flex"
+              >
+                <step
+                  @addSecond="addSecond"
+                  :type="'start'"
+                  @delSecond="delSecond"
+                  :initval="videoInfo.controlInfo.start"
+                  style="margin-right: 10px"
+                  :min="0"
+                  :max="videoInfo.controlInfo.end"
+                ></step>
+                <step
+                  @addSecond="addSecond"
+                  :type="'end'"
+                  @delSecond="delSecond"
+                  :initval="videoInfo.controlInfo.end"
+                  :min="videoInfo.controlInfo.start"
+                  :max="videoInfo.baseInfo.duration"
+                ></step>
+              </div>
+            </template>
+            <!--屏幕快照部分-->
+            <template v-if="currentType === 'snapshot'">
+              <div class="bottom-nav-item" @click="makePhoto">
+                <i
+                  class="iconfont icon-post_pic"
+                  style="margin-right: 10px"
+                ></i>
+                下载快照
+              </div>
+            </template>
+            <!--添加水印图片部分-->
+            <template v-if="currentType === 'addimg'">
+              <div class="bottom-nav-item" @click="selectPic">
+                <i
+                  class="iconfont icon-ai-up-img"
+                  style="margin-right: 10px"
+                ></i>
+                添加图片
+              </div>
+              <div class="bottom-nav-item">
+                <label style="display: inline-block">透明度</label>
+                <div
+                  style="
+                    position: relative;
+                    display: inline-block;
+                    min-width: 160px;
+                    transform: translateY(-5px);
+                  "
+                >
+                  <vue-range-slider
+                    width="160"
+                    class="range-slide"
+                    ref="slider"
+                    v-model="waterPicInfo.opacity"
+                  ></vue-range-slider>
+                </div>
+              </div>
+            </template>
+            <!--视频声音相关-->
+            <template v-if="currentType === 'audio'">
+              <div
+                class="bottom-nav-item"
+                @click="downloadAudio"
+                
+              >
+              <!-- v-tip.top.dark.hover="'下载视频的音频'" -->
+                <i class="iconfont icon-xiazai" style="margin-right: 10px"></i>
+                下载音频
+              </div>
+              <div
+                class="bottom-nav-item"
+                @click="selectAudio"
+                
+              >
+              <!-- v-tip.top.dark.hover="'添加背景音'" -->
+                <i
+                  class="iconfont icon-yinpinbofang"
+                  style="margin-right: 10px"
+                ></i>
+                {{ videoInfo.audio.name ? "替换" : "添加" }}背景音
+                <span style="font-size: 12px" v-if="videoInfo.audio.name"
+                  >(已添加：{{ videoInfo.audio.name }})</span
+                >
+              </div>
+            </template>
+          </div>
+          <!--靠右的设置、保存输出-->
+          <template v-if="videoInfo.baseInfo.originHeight">
+            <div style="float: right">
+              <!--输出选项进行设置-->
+              <div
+                class="setting-box"
+                v-if="showSetting"
+                @mouseleave="showSetting = false"
+              >
+                <div v-for="key in Object.keys(resolvingPower)" :key="key">
+                  <template
+                    v-if="!key || key <= videoInfo.baseInfo.originHeight"
+                  >
+                    <label>
+                      <input
+                        type="radio"
+                        name="rdSpeed"
+                        :value="key"
+                        v-model="videoInfo.controlInfo.resolvingPower"
+                      />
+                      {{ resolvingPower[key] }}
+                    </label>
+                  </template>
+                </div>
+              </div>
+              <div
+                class="bottom-nav-item"
+                
+                @click="showSetting = !showSetting"
+              >
+              <!-- v-tip.top.dark.hover="'输出设置'" -->
+                <i class="iconfont icon-shezhi"></i>
+                {{ resolvingPower[videoInfo.controlInfo.resolvingPower] }}
+              </div>
+              <div
+                class="bottom-nav-item"
+                
+                @click="saveFinally"
+              >
+              <!-- v-tip.top.dark.hover="'保存'" -->
+                保存
+              </div>
+            </div>
+          </template>
+        </div>
+      </div>
+    </div>
+    <template v-if="!options.sources[0].src">
+      <input
+        v-show="false"
+        id="pop_video"
+        type="file"
+        accept="video/mp4"
+        @change="getVideo"
+        name="fileTrans"
+        ref="file"
+        value=""
+      />
+    </template>
+    <input
+      v-show="false"
+      id="pop_pic"
+      type="file"
+      accept="image/*"
+      @change="getPic"
+      name="filePic"
+      ref="filePic"
+      value=""
+    />
+    <input
+      v-show="false"
+      id="pop_audio"
+      type="file"
+      accept="audio/mpeg"
+      @change="getAudio"
+      name="fileAudio"
+      ref="fileAudio"
+      value=""
+    />
     <!-- 加载框 -->
-    <Loadding v-show="showFullLoading" :showFullLoadingText="showFullLoadingText"></Loadding>
+    <Loadding
+      v-show="showFullLoading"
+      :showFullLoadingText="showFullLoadingText"
+    ></Loadding>
   </div>
 </template>
 
@@ -380,16 +428,16 @@ import step from "./Step";
 import Loadding from "./Loadding.vue";
 import "vue-range-component/dist/vue-range-slider.css";
 import VueRangeSlider from "vue-range-component";
-// const ffmpeg = createFFmpeg({ log: true })
+const ffmpeg = createFFmpeg({ log: true });
 // eslint-disable-next-line no-undef
 // const { createFFmpeg, fetchFile } = FFmpeg
-const ffmpeg = createFFmpeg({
-  log: true,
-  corePath: "https://unpkg.com/@ffmpeg/core@0.10.0/dist/ffmpeg-core.js",
-});
+// const ffmpeg = createFFmpeg({
+//   log: true,
+//   corePath: "https://unpkg.com/@ffmpeg/core@0.10.0/dist/ffmpeg-core.js",
+// });
 export default {
-  name: "Home",
-  components: { step, VueRangeSlider,Loadding },
+  name: "VideoClip",
+  components: { step, VueRangeSlider, Loadding },
   props: ["videoinfo_parent"],
   data() {
     return {
@@ -477,7 +525,8 @@ export default {
       }
       let left = 0;
       const percent = (
-        Math.floor(this.videoInfo.currentTime) / this.videoInfo.baseInfo.duration
+        Math.floor(this.videoInfo.currentTime) /
+        this.videoInfo.baseInfo.duration
       ).toFixed(2);
       // 计算总长100的百分之几，并减去左边的宽度
       left = percent * 1000 - this.$refs.left.offsetWidth;
@@ -494,9 +543,12 @@ export default {
       const seconds = time.seconds();
       const milliseconds = time.milliseconds();
       // return moment({ h: hours, m: minutes, s: seconds, ms: milliseconds }).format('HH:mm:ss.SSS')
-      return moment({ h: hours, m: minutes, s: seconds, ms: milliseconds }).format(
-        "HH:mm:ss.S"
-      );
+      return moment({
+        h: hours,
+        m: minutes,
+        s: seconds,
+        ms: milliseconds,
+      }).format("HH:mm:ss.S");
     },
   },
   methods: {
@@ -556,7 +608,9 @@ export default {
     },
     async loadFileToBase64(fileObj) {
       return new Promise((resolve) => {
-        const files = new window.File([fileObj], "source.mp4", { type: "video/mp4" });
+        const files = new window.File([fileObj], "source.mp4", {
+          type: "video/mp4",
+        });
         var reader = new FileReader();
         reader.readAsDataURL(files);
         reader.onload = function (e) {
@@ -604,12 +658,14 @@ export default {
             "-vf",
             "scale=" +
               parseInt(
-                (this.waterPicInfo.width * this.videoInfo.baseInfo.originWidth) /
+                (this.waterPicInfo.width *
+                  this.videoInfo.baseInfo.originWidth) /
                   this.videoInfo.baseInfo.width
               ) +
               ":" +
               parseInt(
-                (this.waterPicInfo.height * this.videoInfo.baseInfo.originHeight) /
+                (this.waterPicInfo.height *
+                  this.videoInfo.baseInfo.originHeight) /
                   this.videoInfo.baseInfo.height
               ),
             "scaled.png"
@@ -634,7 +690,8 @@ export default {
             ) +
             ":" +
             parseInt(
-              (this.waterPicInfo.height * this.videoInfo.baseInfo.originHeight) /
+              (this.waterPicInfo.height *
+                this.videoInfo.baseInfo.originHeight) /
                 this.videoInfo.baseInfo.height
             );
           const overlay = x + ":" + y;
@@ -653,8 +710,10 @@ export default {
         const start = ["-i", "source.mp4"];
         // const lineTime = ['-ss', this.videoInfo.controlInfo.start * 0.001, '-to', this.videoInfo.controlInfo.end * 0.001] // 时间线的begin/end
         // beigin time 和 end time
-        const beginTime = this.videoInfo.controlInfo.start * (0.001).toFixed(3) + "";
-        const endTime = this.videoInfo.controlInfo.end * (0.001).toFixed(3) + "";
+        const beginTime =
+          this.videoInfo.controlInfo.start * (0.001).toFixed(3) + "";
+        const endTime =
+          this.videoInfo.controlInfo.end * (0.001).toFixed(3) + "";
         const lineTime = ["-ss", beginTime, "-to", endTime]; // 时间线的begin/end
         // 设置分辨率,保证不变形  ffmpeg -i 1.mp4 -strict -2 -vf scale=-1:480 4.mp4
         let resolvingPower = [];
@@ -691,7 +750,11 @@ export default {
         if (this.videoInfo.audio.src) {
           // ffmpeg -i b.mp4 -i audio.mp3 -c:v copy -c:a aac -strict experimental -map 0:v:0 -map 1:a:0 output.mp4
           // ffmpeg  -stream_loop 10000 -i  11582.mp3  -ss 00:00:00.0 -t 00:02:00 output.mp3
-          ffmpeg.FS("writeFile", "audio.mp3", await fetchFile(this.videoInfo.audio.src));
+          ffmpeg.FS(
+            "writeFile",
+            "audio.mp3",
+            await fetchFile(this.videoInfo.audio.src)
+          );
           await ffmpeg.run(
             "-stream_loop",
             "-1",
@@ -795,7 +858,9 @@ export default {
       ).toFixed(2);
       const rightPercent =
         1 -
-        (this.videoInfo.controlInfo.end / this.videoInfo.baseInfo.duration).toFixed(2);
+        (
+          this.videoInfo.controlInfo.end / this.videoInfo.baseInfo.duration
+        ).toFixed(2);
       const leftWidth = parseInt(leftPercent * 1000);
       const rightWidth = parseInt(rightPercent * 1000);
       this.$refs.left.style.width = leftWidth + "px";
@@ -814,8 +879,12 @@ export default {
     // 增加秒数
     addSecond(type) {
       if (type === "start") {
-        if (this.videoInfo.controlInfo.start + 100 < this.videoInfo.controlInfo.end) {
-          this.videoInfo.controlInfo.start = this.videoInfo.controlInfo.start + 100;
+        if (
+          this.videoInfo.controlInfo.start + 100 <
+          this.videoInfo.controlInfo.end
+        ) {
+          this.videoInfo.controlInfo.start =
+            this.videoInfo.controlInfo.start + 100;
         }
         // 重新定位播放的游标
         this.videoInfo.currentTime = this.videoInfo.controlInfo.start;
@@ -823,7 +892,10 @@ export default {
           this.player.currentTime(this.videoInfo.currentTime / 1000);
         }
       } else {
-        if (this.videoInfo.controlInfo.end + 100 <= this.videoInfo.baseInfo.duration) {
+        if (
+          this.videoInfo.controlInfo.end + 100 <=
+          this.videoInfo.baseInfo.duration
+        ) {
           this.videoInfo.controlInfo.end = this.videoInfo.controlInfo.end + 100;
         } else {
           this.videoInfo.controlInfo.end = this.videoInfo.baseInfo.duration;
@@ -836,7 +908,8 @@ export default {
     delSecond(type) {
       if (type === "start") {
         if (this.videoInfo.controlInfo.start - 100 >= 0) {
-          this.videoInfo.controlInfo.start = this.videoInfo.controlInfo.start - 100;
+          this.videoInfo.controlInfo.start =
+            this.videoInfo.controlInfo.start - 100;
           // 重新定位播放的游标
           this.videoInfo.currentTime = this.videoInfo.controlInfo.start;
           if (this.player) {
@@ -847,7 +920,10 @@ export default {
           this.$message.warning("已经最小值了！");
         }
       } else {
-        if (this.videoInfo.controlInfo.end - 100 > this.videoInfo.controlInfo.start) {
+        if (
+          this.videoInfo.controlInfo.end - 100 >
+          this.videoInfo.controlInfo.start
+        ) {
           this.videoInfo.controlInfo.end = this.videoInfo.controlInfo.end - 100;
         }
       }
@@ -870,9 +946,12 @@ export default {
       const seconds = time.seconds();
       const milliseconds = time.milliseconds();
       // return moment({ h: hours, m: minutes, s: seconds, ms: milliseconds }).format('HH:mm:ss.SSS')
-      return moment({ h: hours, m: minutes, s: seconds, ms: milliseconds }).format(
-        "HH:mm:ss.S"
-      );
+      return moment({
+        h: hours,
+        m: minutes,
+        s: seconds,
+        ms: milliseconds,
+      }).format("HH:mm:ss.S");
     },
     onResize(x, y, width, height) {
       this.waterPicInfo.x = x;
@@ -916,7 +995,8 @@ export default {
       }
     },
     initVideoCutByUrl(url) {
-      const match = /^((http|https):\/\/)?(([A-Za-z0-9]+-[A-Za-z0-9]+|[A-Za-z0-9]+)\.)+([A-Za-z]+)[//?/:]?.*$/;
+      const match =
+        /^((http|https):\/\/)?(([A-Za-z0-9]+-[A-Za-z0-9]+|[A-Za-z0-9]+)\.)+([A-Za-z]+)[//?/:]?.*$/;
       // 判断是不是正确的url
       if (url === "https://") {
         return;
@@ -958,10 +1038,12 @@ export default {
                 mid[j].style.width = "10px";
               } else {
                 left[j].style.width = moveLen + "px";
-                mid[j].style.width = box[i].clientWidth - moveLen - rightW + "px";
+                mid[j].style.width =
+                  box[i].clientWidth - moveLen - rightW + "px";
               }
               // 动态计算需要显示的秒数
-              const temp = (left[j].clientWidth / maxT) * vm.videoInfo.baseInfo.duration;
+              const temp =
+                (left[j].clientWidth / maxT) * vm.videoInfo.baseInfo.duration;
               // resize[i].setAttribute('data-before', Number(temp).toFixed(1) + 's')
               resize[i].setAttribute("data-before", vm.transTime(temp) + "s");
               // 更新start值，并更新游标位置
@@ -1003,7 +1085,8 @@ export default {
                 right[j].style.width = box[i].clientWidth - 10 - leftW + "px";
               } else {
                 mid[j].style.width = moveLen + "px";
-                right[j].style.width = box[i].clientWidth - moveLen - leftW + "px";
+                right[j].style.width =
+                  box[i].clientWidth - moveLen - leftW + "px";
               }
             }
             // 动态计算需要显示的秒数
@@ -1081,7 +1164,10 @@ export default {
           Number(this.$route.query.uppercent) >= 0 &&
           Number(this.$route.query.uppercent) < 100
         ) {
-          this.setFullLoading(true, "视频上传中..." + this.$route.query.uppercent + "%");
+          this.setFullLoading(
+            true,
+            "视频上传中..." + this.$route.query.uppercent + "%"
+          );
         }
         if (Number(this.$route.query.uppercent) === 100) {
           this.setFullLoading(false);
@@ -1097,7 +1183,9 @@ export default {
     offerFileAsDownload(filename) {
       const mime = "application/octet-stream";
       const content = ffmpeg.FS("readFile", "b.mp4");
-      console.log(`Offering download of "${filename}", with ${content.length} bytes...`);
+      console.log(
+        `Offering download of "${filename}", with ${content.length} bytes...`
+      );
       var a = document.createElement("a");
       a.download = filename;
       a.href = URL.createObjectURL(new Blob([content], { type: mime }));
@@ -1134,7 +1222,8 @@ export default {
     inputFileUrl() {
       const _this = this;
       var url = prompt("请输入视频路径", "https://");
-      const match = /^((http|https):\/\/)?(([A-Za-z0-9]+-[A-Za-z0-9]+|[A-Za-z0-9]+)\.)+([A-Za-z]+)[//?/:]?.*$/;
+      const match =
+        /^((http|https):\/\/)?(([A-Za-z0-9]+-[A-Za-z0-9]+|[A-Za-z0-9]+)\.)+([A-Za-z]+)[//?/:]?.*$/;
       // 判断是不是正确的url
       if (url === "https://") {
         return;
@@ -1157,7 +1246,9 @@ export default {
           if (e.loaded < e.total) {
             _this.setFullLoading(
               true,
-              "加载视频中，请稍等..." + ((e.loaded / e.total) * 100).toFixed(1) + "%"
+              "加载视频中，请稍等..." +
+                ((e.loaded / e.total) * 100).toFixed(1) +
+                "%"
             );
           } else {
             _this.setFullLoading(false);
@@ -1204,7 +1295,8 @@ export default {
     // 用户点击输入视频URL
     async inputFileUrlTemp() {
       var url = prompt("请输入视频路径", "https://");
-      const match = /^((http|https):\/\/)?(([A-Za-z0-9]+-[A-Za-z0-9]+|[A-Za-z0-9]+)\.)+([A-Za-z]+)[//?/:]?.*$/;
+      const match =
+        /^((http|https):\/\/)?(([A-Za-z0-9]+-[A-Za-z0-9]+|[A-Za-z0-9]+)\.)+([A-Za-z]+)[//?/:]?.*$/;
       // 判断是不是正确的url
       if (url === "https://") {
         return;
@@ -1214,7 +1306,8 @@ export default {
           this.setFullLoading(true, "加载线上数据中...");
           const data = await fetchFile(url);
           // 将数据转成base64的形式
-          const dataBase64 = "data:video/mp4;base64," + this.arrayBufferToBase64(data);
+          const dataBase64 =
+            "data:video/mp4;base64," + this.arrayBufferToBase64(data);
           this.options.sources[0].src = dataBase64;
           this.initVideo(dataBase64, this);
           this.setFullLoading(false);
@@ -1372,7 +1465,9 @@ export default {
         await ffmpeg.load();
       }
       // 计算10个对应的时间点
-      const averageDura = parseInt((this.videoInfo.baseInfo.duration * 0.001) / 13);
+      const averageDura = parseInt(
+        (this.videoInfo.baseInfo.duration * 0.001) / 13
+      );
       ffmpeg.FS("writeFile", "source.mp4", await fetchFile(this.fileObj));
       ffmpeg.setProgress(({ ratio }) => {
         this.setFullLoading("true", "视频解析中...");
@@ -1409,7 +1504,9 @@ export default {
           }
           // await ffmpeg.run('-i', 'source.mp4', '-r', '1', '-ss', parseInt(averageDura * i) + '', '-vframes', '1', '-f', 'image2', '-s', '100*50', 'image-' + temp + '.png')
           this.videoInfo.waterFrames.push(
-            this.arrayBufferToBase64(ffmpeg.FS("readFile", "image-" + temp + ".png"))
+            this.arrayBufferToBase64(
+              ffmpeg.FS("readFile", "image-" + temp + ".png")
+            )
           );
         }
       } catch (e) {
@@ -1437,7 +1534,9 @@ export default {
           }
           // await ffmpeg.run('-i', 'source.mp4', '-r', '1', '-ss', parseInt(averageDura * i) + '', '-vframes', '1', '-f', 'image2', '-s', '100*50', 'image-' + temp + '.png')
           this.videoInfo.waterFrames.push(
-            this.arrayBufferToBase64(ffmpeg.FS("readFile", "image-" + temp + ".png"))
+            this.arrayBufferToBase64(
+              ffmpeg.FS("readFile", "image-" + temp + ".png")
+            )
           );
         }
       }
@@ -1525,7 +1624,8 @@ export default {
       var lastByte = length - i;
       if (lastByte === 1) {
         var lastNum1 = array[i];
-        base64Str += table[lastNum1 >>> 2] + table[(lastNum1 & 0b11) << 4] + "==";
+        base64Str +=
+          table[lastNum1 >>> 2] + table[(lastNum1 & 0b11) << 4] + "==";
       } else if (lastByte === 2) {
         // eslint-disable-next-line no-redeclare
         var lastNum1 = array[i];
@@ -1603,7 +1703,10 @@ export default {
       var resize = document.getElementsByClassName("resize");
       var resize2 = document.getElementsByClassName("resize2");
       resize[0].setAttribute("data-before", "00:00:00s");
-      resize2[0].setAttribute("data-after", vm.transTime(duration * 1000) + "s");
+      resize2[0].setAttribute(
+        "data-after",
+        vm.transTime(duration * 1000) + "s"
+      );
       // resize2[0].setAttribute('data-after', duration + 's')
 
       vm.$nextTick(() => {
@@ -1698,11 +1801,413 @@ export default {
   },
 };
 </script>
-<style>
-.m-message-container {
-  z-index: 9999999999 !important;
+
+<style lang="scss" scoped>
+.video_clip_container {
+  width: 100%;
+  height: 800px;
+  background: #070709;
+  .video_clip_menu {
+    height: 70%;
+    display: flex;
+    justify-content: space-around;
+    .video_clip_menu_left {
+      width: 38%;
+      /* 上传视频区域 */
+      .video_clip_upload_box {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        .video_clip_upload {
+          text-align: center;
+          .title {
+            color: #ffffff;
+            font-weight: 700;
+            font-size: 48px;
+            margin: 0;
+          }
+          .tips {
+            font-weight: 400;
+            font-size: 18px;
+            color: #ffffff;
+            opacity: 0.8;
+          }
+          .select-type {
+            line-height: 60px;
+            width: 250px;
+            margin: 30px auto;
+            .select-drop {
+              background: #ffffff;
+              margin-top: 5px;
+              .select-item {
+                cursor: pointer;
+                &:hover {
+                  background: #0088ff20;
+                }
+              }
+            }
+            .select-type-inner {
+              background: #ffffff;
+              .open-file {
+                width: 198px;
+                color: #003d75;
+                border-right: 1px solid #003d75;
+                cursor: pointer;
+                &:hover {
+                  box-shadow: 0px 0px 10px #ffffff;
+                }
+              }
+              .arrow {
+                width: 50px;
+                text-align: center;
+                cursor: pointer;
+                &:hover {
+                  box-shadow: 0px 0px 10px #ffffff;
+                }
+                i {
+                  color: #003d75;
+                  &:hover {
+                    color: #003d7575;
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+
+    /*内容编辑区域*/
+    .video_clip_content_box {
+      width: 60%;
+      height: 100%;
+      .video_clip_content_top {
+        height: 5%;
+        margin-bottom: 15px;
+        display: flex;
+        justify-content: space-between;
+        .toolbar {
+          display: flex;
+          .tool-item {
+            opacity: 0.8;
+            vertical-align: middle;
+            background-color: rgba(0, 0, 0, 0.1);
+            color: #ffffff;
+            font-size: 13px;
+            cursor: pointer;
+            line-height: 20px;
+            margin-right: 5px;
+            padding: 6px 15px;
+            &:hover {
+              opacity: 1;
+            }
+            &.active {
+              opacity: 1;
+              background: #012d56;
+            }
+            &:first-child {
+              border-radius: 10px 0px 0px 10px;
+            }
+            &:last-child {
+              border-radius: 0px 10px 10px 0px;
+            }
+            .i-name {
+              margin-left: 5px;
+              display: inline-block;
+              cursor: pointer;
+            }
+            i {
+              height: 20px;
+            }
+          }
+        }
+        .toolbar-right {
+          display: flex;
+          color: #ffffff;
+          font-size: 13px;
+          line-height: 20px;
+          .reset {
+            padding-right: 18px;
+          }
+          .tool-item {
+            opacity: 0.8;
+            cursor: pointer;
+            &:hover {
+              opacity: 1;
+            }
+          }
+        }
+      }
+      .video_clip_content {
+        height: 75%;
+        /*视频部分*/
+        .video_box {
+          height: 100%;
+          background: #1b1b1c;
+          padding: 0;
+          box-sizing: border-box;
+          text-align: center;
+          vertical-align: middle;
+          border-radius: 15px;
+          margin-left: 5px;
+          margin-right: 5px;
+          .video_box_title {
+            height: 42px;
+            line-height: 42px;
+            text-align: left;
+            background: #29292d;
+            margin: 0;
+            padding: 0 0 0 20px;
+            border-radius: 10px 10px 0 0;
+            font-size: 13px;
+            user-select: none;
+          }
+          .video-name {
+            font-size: 12px;
+            text-align: center;
+            color: hsla(0, 0%, 100%, 0.5);
+            margin-bottom: 15px;
+          }
+          .video_box_bottom {
+            width: 100%;
+            height: 70px;
+            min-height: 70px;
+          }
+        }
+        .video-js {
+          margin: 0 auto;
+        }
+        /*视频播放区域可操作的部分*/
+        .dragable-area {
+          height: 360px;
+          width: 800px;
+          position: absolute;
+          top: 0px;
+          left: calc((100% - 800px) / 2);
+          .clear-water {
+            position: absolute;
+            right: 0;
+            top: 0;
+            transform: translate(50%, -50%);
+            color: green;
+            cursor: pointer;
+            &:hover {
+              color: darkblue;
+            }
+          }
+        }
+      }
+    }
+  }
+  .video_clip_options {
+    height: 30%;
+    .video_clip_options_box {
+      height: 20%;
+      /*视轨部分*/
+      .track-wrap {
+        box-sizing: border-box;
+        width: 1020px;
+        // overflow: visible;
+        // margin: 43px auto;
+        .drag-frames {
+          width: 1000px;
+          transform: translateX(10px);
+          position: absolute;
+          top: 0;
+          left: 0;
+          ul,
+          li {
+            list-style: none;
+            display: block;
+            margin: 0;
+            padding: 0;
+          }
+          .box {
+            width: 1000px;
+            height: 50px;
+            position: relative;
+            /*overflow:hidden;*/
+            overflow: inherit;
+          }
+          .left {
+            width: 0px;
+            height: 100%;
+            background-color: rgba(32, 57, 109, 0.5);
+            float: left;
+          }
+
+          .resize {
+            transform: translateX(-10px);
+            width: 10px;
+            height: 100%;
+            cursor: w-resize;
+            float: left;
+            background-color: #00e0ff;
+            border-top-left-radius: 4px;
+            border-bottom-left-radius: 4px;
+            border-bottom-right-radius: 0;
+            border-top-right-radius: 0;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: 5px auto;
+            background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg viewBox='0 0 3 15' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1.5 3a1.5 1.5 0 100-3 1.5 1.5 0 000 3zM1.5 9a1.5 1.5 0 100-3 1.5 1.5 0 000 3zM1.5 15a1.5 1.5 0 100-3 1.5 1.5 0 000 3z' fill='%23fff' clip-rule='evenodd' fill-rule='evenodd'/%3E%3C/svg%3E");
+            &::before {
+              content: attr(data-before);
+              color: #00e0ff;
+              position: absolute;
+              bottom: 0;
+              transform: translate(-50%, 30px);
+              width: max-content;
+            }
+          }
+          .resize:before {
+          }
+          .resize2 {
+            transform: translateX(10px);
+            position: absolute;
+            width: 10px;
+            height: 100%;
+            cursor: w-resize;
+            float: right;
+            right: 0;
+            background-color: #00e0ff;
+            border-top-left-radius: 0px;
+            border-bottom-left-radius: 0px;
+            border-bottom-right-radius: 4px;
+            border-top-right-radius: 4px;
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: 5px auto;
+            background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg viewBox='0 0 3 15' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1.5 3a1.5 1.5 0 100-3 1.5 1.5 0 000 3zM1.5 9a1.5 1.5 0 100-3 1.5 1.5 0 000 3zM1.5 15a1.5 1.5 0 100-3 1.5 1.5 0 000 3z' fill='%23fff' clip-rule='evenodd' fill-rule='evenodd'/%3E%3C/svg%3E");
+            &::after {
+              content: attr(data-after);
+              color: #00e0ff;
+              position: absolute;
+              bottom: 0;
+              transform: translate(-50%, 30px);
+              width: max-content;
+            }
+          }
+
+          .right {
+            float: left;
+            width: 0px;
+            height: 100%;
+            background-color: rgba(32, 57, 109, 0.5);
+          }
+          .mid {
+            min-width: 5px;
+            position: relative;
+            float: left;
+            width: 100%;
+            height: 100%;
+            background: transparent;
+          }
+        }
+        .components_video-navigation {
+          position: relative;
+        }
+        .component_storyboard {
+          padding: 0 10px;
+          .frames {
+            display: flex;
+            width: 100%;
+            overflow: hidden;
+          }
+          .frame {
+            img {
+              width: 88px;
+              height: 50px;
+            }
+          }
+          .frame.loaded {
+            background-image: none;
+          }
+        }
+        .component_storyboard .frames .frame {
+          background-color: rgba(0, 0, 0, 0.8);
+          background-image: url('data:image/svg+xml;utf8,<svg width="200px" height="200px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid" class="lds-eclipse" style="animation-play-state: running; animation-delay: 0s; background: none;"><path stroke="none" d="M10 50A40 40 0 0 0 90 50A40 42 0 0 1 10 50" fill="%2300E0FF" style="animation-play-state: running; animation-delay: 0s;"><animateTransform attributeName="transform" type="rotate" calcMode="linear" values="0 50 51;360 50 51" keyTimes="0;1" dur="1s" begin="0s" repeatCount="indefinite" style="animation-play-state: running; animation-delay: 0s;"></animateTransform></path></svg>');
+          background-size: 25%;
+          background-position: 50%;
+          background-repeat: no-repeat;
+          flex-shrink: 0;
+          flex-grow: 0;
+          pointer-events: none;
+        }
+      }
+      /* 底部的操作菜单 */
+      .bottom-nav {
+        color: #ffffff;
+        display: flex;
+        justify-content: space-between;
+        .bottom-nav-item {
+          &:hover {
+            background-color: rgba(0, 0, 0, 0.5);
+          }
+          padding: 0 15px;
+          cursor: pointer;
+          text-align: center;
+          line-height: 50px;
+          height: 50px;
+          border-radius: 15px;
+          box-sizing: border-box;
+          border: 1px solid transparent;
+          position: relative;
+          margin-right: 20px;
+          margin-top: 10px;
+          display: inline-block;
+          background-color: rgba(0, 0, 0, 0.25);
+        }
+        .play-btn {
+          width: 100px;
+          i {
+            font-size: 16px;
+          }
+        }
+        .range-slide {
+          width: 160px;
+          padding: 8px;
+          position: absolute;
+          left: 50%;
+          top: 50%;
+          transform: translate(-50%, -50%);
+        }
+      }
+      /* 游标的样式 */
+      .youbiao {
+        position: absolute;
+        left: 0px;
+      }
+      .youbiao-time {
+        width: 70px;
+        position: absolute;
+        left: 0px;
+        color: #333333;
+        transform: translate(-50%, -25px);
+        font-size: 12px;
+        background: #ffffff;
+        border-radius: 10px;
+        padding: 3px;
+        text-align: center;
+      }
+      /* 设置 */
+      .setting-box {
+        position: absolute;
+        width: fit-content;
+        border-radius: 20px;
+        background-color: #000;
+        border: none;
+        padding: 20px;
+        font-size: 14px;
+        transform: translate(-50%, -110%);
+        div {
+          width: auto;
+        }
+      }
+    }
+  }
 }
 </style>
-<style lang="less" scoped>
-@import "../assets/css/common";
-</style>
+

@@ -1,18 +1,21 @@
 <template>
   <div class="home">
-    <h2>视频前端压缩</h2>
+    <!-- <h2>视频前端压缩</h2>
     <video id="video" controls></video><br />
     <input type="file" id="upload" @change="upload">
-    <p id="text">{{ msg }}</p>
+    <p id="text">{{ msg }}</p> -->
+    <VideoClip></VideoClip>
   </div>
 </template>
 
 <script>
 // @ is an alias to /src
 import { createFFmpeg, fetchFile } from '@ffmpeg/ffmpeg'
+import VideoClip from '@/components/VideoClip.vue';
 export default {
   name: 'HomeView',
   components: {
+    VideoClip
   },
   data() {
     return {
